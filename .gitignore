@@ -1,0 +1,25 @@
+node_modules/
+dist/
+output/
+.env.local
+.env
+*.log
+.DS_Store
+# One-off debug scripts
+debug-lucylab.ts
+
+# Big SFX library (downloaded by `npm run sfx:download` — too large to commit)
+SFX/
+
+# Render artifacts from manual test runs (pipeline outputs into fixture dir)
+tests/fixtures/video.mp4
+tests/fixtures/video-preview.mp4
+tests/fixtures/voice*.mp3
+tests/fixtures/index.html
+tests/fixtures/styles.css
+tests/fixtures/animations.js
+tests/fixtures/hyperframes.json
+tests/fixtures/meta.json
+tests/fixtures/script.txt
+tests/fixtures/tiktok-avatar.png
+tests/fixtures/voice/
