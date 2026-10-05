@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta property="og:image" content="https://cdn.example.com/og-cover.jpg">
+  <link rel="icon" href="/favicon.ico">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "NewsArticle",
+    "image": [
+      "https://cdn.example.com/photos/jsonld-hero.jpg",
+      {"url": "https://cdn.example.com/photos/jsonld-second.png"}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <img src="/icons/menu.svg" width="24" alt="menu">
+  <img src="https://cdn.example.com/photos/hero.jpg" width="1200" alt="Đội ngũ phát triển">
+  <img data-src="https://cdn.example.com/photos/lazy-loading.jpg" width="800" alt="Màn hình mới">
+  <img src="https://cdn.example.com/photos/tiny.gif" width="120" alt="emoji icon">
+  <img src="https://cdn.example.com/photos/logo-band.png" alt="logo">
+  <img srcset="https://cdn.example.com/photos/small.jpg 480w,
+               https://cdn.example.com/photos/medium.jpg 1024w,
+               https://cdn.example.com/photos/large.jpg 1920w"
+       width="1920" alt="Bản đồ kiến trúc">
+  <video controls poster="https://cdn.example.com/photos/poster.jpg">
+    <source src="https://cdn.example.com/videos/demo.mp4" type="video/mp4">
+  </video>
+  <video src="https://cdn.example.com/videos/teaser.webm"></video>
+  <a href="https://twitter.com/share">share</a>
+</body>
+</html>
