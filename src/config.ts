@@ -1,5 +1,8 @@
+import type { VideoFormat } from "./render/format.js";
+
 export type TtsProvider = "edge-tts" | "lucylab" | "elevenlabs" | "vbee" | "google-tts" | "saydi" | "revid";
 export type VideoTheme = "dark-neon" | "light-pro" | "dev-terminal";
+export type { VideoFormat };
 
 export interface TiktokConfig {
   displayName: string;
@@ -67,6 +70,16 @@ export interface Config {
 
   /** Visual template — selects which styles.<theme>.css file gets used. */
   videoTheme: VideoTheme;
+
+  /**
+   * Video format from VIDEO_FORMAT env ("short" | "long", default "short").
+   * Fallback only: a script.json top-level `format` field wins over this
+   * (see parseScript in render/script-schema.ts).
+   */
+  videoFormat: VideoFormat;
+
+  /** Brand tag override from BRAND_TAG env. Undefined → per-format default. */
+  brandTag?: string;
 }
 
 function intDefault(name: string, def: number): number {
@@ -184,6 +197,11 @@ export function loadConfig(): Config {
     throw new Error(`VIDEO_THEME must be "dark-neon", "light-pro" or "dev-terminal", got "${videoTheme}"`);
   }
 
+  const videoFormat = (process.env.VIDEO_FORMAT ?? "short").trim().toLowerCase() as VideoFormat;
+  if (videoFormat !== "short" && videoFormat !== "long") {
+    throw new Error(`VIDEO_FORMAT must be "short" or "long", got "${videoFormat}"`);
+  }
+
   return {
     ttsProvider: provider,
     edgeTtsVoice: process.env.EDGE_TTS_VOICE ?? "vi-VN-HoaiMyNeural",
@@ -228,5 +246,7 @@ export function loadConfig(): Config {
     },
     ttsConcurrency: intDefault("TTS_CONCURRENCY", 1),
     videoTheme,
+    videoFormat,
+    brandTag: process.env.BRAND_TAG?.trim() || undefined,
   };
 }

@@ -6,7 +6,7 @@
 import { readFile, writeFile, copyFile } from "node:fs/promises";
 import { join, dirname, basename } from "node:path";
 import { fileURLToPath } from "node:url";
-import { ScriptSchema } from "./src/render/script-schema.js";
+import { parseScript } from "./src/render/script-schema.js";
 import { loadConfig } from "./src/config.js";
 import { getDurationSec, concatWithSilence, mixSfxOntoVoice, type SfxMixSpec } from "./src/assets/audio-tools.js";
 import { indexSfxLibrary, pickSfxForScene, defaultPlayback } from "./src/assets/sfx-selector.js";
@@ -54,7 +54,8 @@ async function main() {
       : cfg.ttsProvider === "saydi" ? cfg.saydiVoice
       : cfg.vbeeVoiceCode;
   }
-  const script = ScriptSchema.parse(raw);
+  const script = parseScript(raw, cfg.videoFormat);
+  log.info(`Format: ${script.format}`);
 
   // Probe per-scene durations from existing voice files
   const sceneAudio = await Promise.all(
@@ -201,6 +202,8 @@ async function main() {
     tiktok: cfg.tiktok,
     tiktokAvatarRelPath: ttAvatarFile,
     outroHoldSec: OUTRO_HOLD_SEC,
+    format: script.format,
+    brandTag: cfg.brandTag,
   });
   await writeFile(join(outputDir, "index.html"), html);
   await writeFile(join(outputDir, "hyperframes.json"), JSON.stringify(HYPERFRAMES_CONFIG, null, 2));
@@ -213,7 +216,13 @@ async function main() {
     cfg.videoTheme === "light-pro" ? "styles.light-pro.css" :
     cfg.videoTheme === "dev-terminal" ? "styles.dev-terminal.css" :
     "styles.css";
-  await copyFile(join(TPL_DIR, themeFile),       join(outputDir, "styles.css"));
+  if (script.format === "long") {
+    const themeCss = await readFile(join(TPL_DIR, themeFile), "utf8");
+    const longCss = await readFile(join(TPL_DIR, "styles.long.css"), "utf8");
+    await writeFile(join(outputDir, "styles.css"), `${themeCss}\n${longCss}`);
+  } else {
+    await copyFile(join(TPL_DIR, themeFile),       join(outputDir, "styles.css"));
+  }
   await copyFile(join(TPL_DIR, "animations.js"), join(outputDir, "animations.js"));
 
   // Render

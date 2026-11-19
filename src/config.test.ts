@@ -24,6 +24,9 @@ const ENV_KEYS = [
   "VBEE_POLL_INTERVAL_MS",
   "VBEE_POLL_TIMEOUT_MS",
   "TTS_CONCURRENCY",
+  "VIDEO_THEME",
+  "VIDEO_FORMAT",
+  "BRAND_TAG",
 ];
 
 describe("loadConfig", () => {
@@ -168,6 +171,27 @@ describe("loadConfig", () => {
       const cfg = loadConfig();
       expect(cfg.vbeeVoiceCode).toBe("n_hanoi_female_nguyetnga2_book_vc");
       expect(cfg.vbeeSpeedRate).toBe(1.2);
+    });
+  });
+
+  describe("Video format + brand tag", () => {
+    it("defaults VIDEO_FORMAT to short with no brand tag override", () => {
+      const cfg = loadConfig();
+      expect(cfg.videoFormat).toBe("short");
+      expect(cfg.brandTag).toBeUndefined();
+    });
+
+    it("reads VIDEO_FORMAT=long and BRAND_TAG", () => {
+      process.env.VIDEO_FORMAT = "long";
+      process.env.BRAND_TAG = "CODE TIPS";
+      const cfg = loadConfig();
+      expect(cfg.videoFormat).toBe("long");
+      expect(cfg.brandTag).toBe("CODE TIPS");
+    });
+
+    it("rejects an invalid VIDEO_FORMAT", () => {
+      process.env.VIDEO_FORMAT = "square";
+      expect(() => loadConfig()).toThrow(/VIDEO_FORMAT/);
     });
   });
 

@@ -94,6 +94,42 @@ npm test
 
 ---
 
+## 🎬 Long videos (16:9)
+
+The same pipeline also renders **long-form tutorials** at **1920×1080 (16:9)** — Shorts are untouched and remain the default.
+
+**Turn it on** — add a top-level field to `script.json`:
+
+```jsonc
+{
+  "version": "1.0",
+  "format": "long",          // ← absent or "short" = the original 9:16 Short
+  "metadata": { /* … */ },
+  "voice": { /* … */ },
+  "scenes": [ /* 8–60 scenes, first = hook, last = outro */ ]
+}
+```
+
+`VIDEO_FORMAT=long` in `.env.local` works as a fallback when a script has no `format` field (the script field wins). Long scripts get relaxed text limits (hook headline ≤ 90 chars, callout ≤ 160, feature-list ≤ 6 bullets × 90 chars, …) and two extra templates:
+
+| Template | Scene type | Purpose |
+|:---|:---|:---|
+| `chapter` | `chapter` | Full-screen section divider: big chapter number + title + subtitle |
+| `code-demo` | `body` | Code as a real VS Code window — filename tab, line numbers, Dark+ colours, `highlightLines` bands; type scales down so a full 30-line file fits one frame |
+
+```jsonc
+{ "id": "ch1", "type": "chapter", "voiceText": "Chương một…",
+  "templateData": { "template": "chapter", "index": 1, "title": "Vì sao useEffect lại đau?" } },
+{ "id": "code-1", "type": "body", "voiceText": "Đây là bốn dòng useQuery…",
+  "templateData": { "template": "code-demo", "filename": "Users.jsx",
+    "code": ["const { data } = useQuery({", "  queryKey: ['users'],", "});"],
+    "highlightLines": [2], "caption": "queryKey là tên cache" } }
+```
+
+**Brand tag:** the shell header tag is configurable — Shorts default to `IT NEWS`, long videos to **`CODE TIPS`** (chosen for the "Lập trình là cuộc sống" tutorials). Override with `BRAND_TAG` env or `"brandTag"` in script metadata. The long outro is text-only: hero line once, then a card holding only the Subscribe button.
+
+**Reference example:** [`examples/long-sample.script.json`](examples/long-sample.script.json) — the full TanStack Query tutorial ("Xóa 30 Dòng useEffect Gọi API Bằng 4 Dòng TanStack Query", the long version of the 41-second Short): 18 scenes, 5 chapters, the real counted 30-line manual file shown whole in one `code-demo`, the 4-line `useQuery`, staleTime, `useMutation` + `invalidateQueries`, common mistakes, and the honest caveat that `QueryClientProvider` wraps the app **once** at the root.
+
 ## 🎨 Themes
 
 | Theme | Description |

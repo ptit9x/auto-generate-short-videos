@@ -20,7 +20,16 @@ window.__timelines["news-video"] = tl;
   });
 
   const stage = document.getElementById("stage");
+  const stageW = parseFloat(stage.dataset.width) || 1080;
   const scenes = Array.from(stage.querySelectorAll(".scene"));
+
+  // Persistent shell keyword chip (bottom-centre source pill). A dense
+  // code-demo scene (>20 lines) ends with a caption line exactly where
+  // this chip sits, so the chip paints over the caption's middle
+  // (v2 render test, 2026-11-19). Collect the dense scenes' spans here;
+  // the chip is hidden for those spans after the dispatch loop.
+  const keywordChip = stage.querySelector(".brand-shell-keyword");
+  const denseCodeIntervals = [];
 
   // ── Scene dispatch ──────────────────────────────────────────────────────
   scenes.forEach((scene) => {
@@ -31,6 +40,10 @@ window.__timelines["news-video"] = tl;
     // Scene visibility: fade in/out
     tl.set(scene, { opacity: 1 }, start);
     tl.set(scene, { opacity: 0 }, start + dur);
+
+    if (layout === "code-demo" && scene.querySelector(".layout-code-demo--dense")) {
+      denseCodeIntervals.push([start, start + dur]);
+    }
 
     if (layout === "hook") {
       animateHook(scene, tl, start);
@@ -44,6 +57,10 @@ window.__timelines["news-video"] = tl;
       animateCallout(scene, tl, start);
     } else if (layout === "media-strip") {
       animateMediaStrip(scene, tl, start, dur);
+    } else if (layout === "chapter") {
+      animateChapter(scene, tl, start);
+    } else if (layout === "code-demo") {
+      animateCodeDemo(scene, tl, start);
     } else if (layout === "outro") {
       animateOutro(scene, tl, start, dur);
     }
@@ -52,6 +69,27 @@ window.__timelines["news-video"] = tl;
     // via GSAP (supported props only). CSS var --scene-dur isn't available here.
     animateSceneBg(scene, tl, start, dur);
   });
+
+  // ── Shell keyword chip vs dense code-demo captions ────────────────────
+  // Hide the chip while a dense code-demo scene is on screen; restore it
+  // when the span ends so every other scene keeps the chip exactly as
+  // before. Adjacent dense scenes are merged into one span so the chip
+  // never flickers at a scene cut.
+  if (keywordChip && denseCodeIntervals.length > 0) {
+    const merged = [];
+    for (const [s, e] of denseCodeIntervals) {
+      const last = merged[merged.length - 1];
+      if (last && s <= last[1] + 0.001) {
+        last[1] = Math.max(last[1], e);
+      } else {
+        merged.push([s, e]);
+      }
+    }
+    for (const [s, e] of merged) {
+      tl.set(keywordChip, { opacity: 0 }, s);
+      tl.set(keywordChip, { opacity: 1 }, e);
+    }
+  }
 
   // ── HOOK ──────────────────────────────────────────────────────────────
   function animateHook(scene, tl, start) {
@@ -177,10 +215,10 @@ window.__timelines["news-video"] = tl;
         tl.set(item, { opacity: 1, x: 0 }, start);
       } else {
         // Slide in from the right while the previous one slides out left.
-        tl.set(item, { opacity: 1, x: 1080 }, at - 0.55);
+        tl.set(item, { opacity: 1, x: stageW }, at - 0.55);
         tl.to(item, { x: 0, duration: 0.55 }, at - 0.55);
         const prev = items[i - 1];
-        tl.to(prev, { x: -1080, duration: 0.55 }, at - 0.55);
+        tl.to(prev, { x: -stageW, duration: 0.55 }, at - 0.55);
       }
 
       // Subtle zoom on the visible media while it holds.
@@ -189,6 +227,52 @@ window.__timelines["news-video"] = tl;
         tl.fromTo(media, { scale: 1.0 }, { scale: 1.07, duration: per }, Math.max(start, at - (i === 0 ? 0.6 : 0)));
       }
     });
+  }
+
+  // ── CHAPTER (long only) ───────────────────────────────────────────────
+  function animateChapter(scene, tl, start) {
+    const kicker = scene.querySelector(".chapter-kicker");
+    if (kicker) {
+      tl.fromTo(kicker, { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4 }, start + 0.1);
+    }
+    const number = scene.querySelector(".chapter-number");
+    if (number) {
+      tl.fromTo(number, { scale: 0.7, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.55 }, start + 0.2);
+    }
+    const title = scene.querySelector(".chapter-title");
+    if (title) {
+      tl.fromTo(title, { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5 }, start + 0.45);
+    }
+    const rule = scene.querySelector(".chapter-rule");
+    if (rule) {
+      tl.fromTo(rule, { scaleX: 0, opacity: 1 }, { scaleX: 1, opacity: 1, duration: 0.4 }, start + 0.8);
+    }
+    const subtitle = scene.querySelector(".chapter-subtitle");
+    if (subtitle) {
+      tl.fromTo(subtitle, { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45 }, start + 0.95);
+    }
+  }
+
+  // ── CODE DEMO (long only) ─────────────────────────────────────────────
+  function animateCodeDemo(scene, tl, start) {
+    const title = scene.querySelector(".code-demo-title");
+    if (title) {
+      tl.fromTo(title, { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4 }, start + 0.1);
+    }
+    const win = scene.querySelector(".code-window");
+    if (win) {
+      tl.fromTo(win, { y: 50, scale: 0.97, opacity: 0 }, { y: 0, scale: 1, opacity: 1, duration: 0.5 }, start + 0.2);
+    }
+    // Lines fade/slide in staggered; highlighted lines land last-ish so
+    // the eye is drawn to them after the file is on screen.
+    const lines = scene.querySelectorAll(".code-line");
+    lines.forEach((line, i) => {
+      tl.fromTo(line, { opacity: 0, x: -14 }, { opacity: 1, x: 0, duration: 0.25 }, start + 0.45 + i * 0.03);
+    });
+    const caption = scene.querySelector(".code-demo-caption");
+    if (caption) {
+      tl.fromTo(caption, { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4 }, start + 0.9);
+    }
   }
 
   // ── OUTRO ─────────────────────────────────────────────────────────────

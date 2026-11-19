@@ -1,0 +1,246 @@
+/* ============================================================
+   LONG FORMAT OVERRIDES — 16:9 landscape (1920×1080)
+   Loaded AFTER the theme stylesheet (pipeline concatenates it
+   onto styles.css) only for format:"long" videos. Shorts never
+   see this file. All selectors are scoped under .format-long so
+   they beat the single-class portrait theme rules.
+   Also contains ALL styling for the long-only templates
+   (chapter, code-demo) — they only exist in long scripts.
+   ============================================================ */
+
+/* ── STAGE ─────────────────────────────────────────────────── */
+body.format-long { width: 1920px; height: 1080px; }
+.format-long #stage { width: 1920px; height: 1080px; }
+
+/* ── SHELL ─────────────────────────────────────────────────── */
+.format-long .brand-shell-header { top: 36px; left: 48px; }
+.format-long .brand-icon { width: 64px; height: 64px; font-size: 26px; border-radius: 12px; }
+.format-long .brand-name { font-size: 28px; }
+.format-long .brand-tag { font-size: 20px; }
+.format-long .brand-shell-keyword { bottom: 28px; padding: 8px 24px; }
+.format-long .brand-shell-keyword span { font-size: 20px; }
+
+/* Cards get room to breathe, capped so text lines stay readable */
+.format-long .layout-hook,
+.format-long .layout-comparison,
+.format-long .layout-stat-hero,
+.format-long .layout-feature-list,
+.format-long .layout-callout,
+.format-long .layout-media-strip,
+.format-long .layout-outro {
+  padding: 110px 110px 90px;
+}
+
+/* ── HOOK — left-aligned, larger ───────────────────────────── */
+.format-long .layout-hook { align-items: flex-start; text-align: left; }
+.format-long .hook-headline { font-size: 118px; text-align: left; max-width: 1560px; }
+.format-long .hook-subhead { font-size: 54px; text-align: left; }
+
+/* ── COMPARISON — side by side ─────────────────────────────── */
+.format-long .layout-comparison { flex-direction: row; gap: 36px; }
+.format-long .cmp-card { flex: 1 1 0; width: auto; max-width: 760px; }
+.format-long .cmp-vs { flex: 0 0 auto; }
+
+/* ── STAT HERO ─────────────────────────────────────────────── */
+.format-long .stat-value { font-size: 190px; }
+
+/* ── FEATURE LIST — wide card, bullets in 2 columns ────────── */
+.format-long .feat-card { width: 100%; max-width: 1560px; margin: 0 auto; }
+.format-long .feat-bullets {
+  display: grid; grid-template-columns: 1fr 1fr;
+  column-gap: 56px; row-gap: 8px;
+}
+
+/* ── CALLOUT ───────────────────────────────────────────────── */
+.format-long .callout-card { max-width: 1400px; margin: 0 auto; }
+
+/* ── MEDIA STRIP — horizontal track ────────────────────────── */
+.format-long .layout-media-strip { padding: 120px 80px 110px; }
+.format-long .strip-track { height: 640px; }
+.format-long .strip-media { height: 560px; }
+
+/* ── OUTRO — landscape, centered ───────────────────────────── */
+/* The outro reuses the existing outro + Subscribe (tt-card) blocks:
+   text-only hero, Subscribe card holding only the button row — no
+   channel-name repeat beyond the hero line, no personal photo.
+   In landscape the card sits lower-centre instead of mid-frame. */
+.format-long .layout-outro { padding: 100px 110px 200px; }
+.format-long .out-channel { font-size: 64px; }
+.format-long .tt-card { bottom: 56px; }
+
+/* ── CHAPTER (long only) ───────────────────────────────────── */
+.format-long .layout-chapter {
+  position: absolute; inset: 0; z-index: 5;
+  display: flex; flex-direction: column;
+  align-items: flex-start; justify-content: center;
+  padding: 110px 140px 90px;
+}
+.format-long .chapter-kicker {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 30px; font-weight: 700; letter-spacing: 6px;
+  color: #7ee787; text-transform: uppercase;
+}
+.format-long .chapter-number {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 240px; font-weight: 800; line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 3px rgba(126, 231, 135, 0.45);
+  margin: 10px 0 6px;
+}
+.format-long .chapter-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 84px; font-weight: 800; line-height: 1.12;
+  color: #e6edf3; max-width: 1560px;
+}
+.format-long .chapter-rule {
+  width: 220px; height: 6px; border-radius: 3px;
+  background: linear-gradient(90deg, #7ee787, #58a6ff);
+  margin: 36px 0 28px;
+}
+.format-long .chapter-subtitle {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 38px; font-weight: 500; line-height: 1.35;
+  color: #8b949e; max-width: 1400px;
+}
+
+/* ── CODE DEMO (long only) — real VS Code window, Dark+ ────── */
+.format-long .layout-code-demo {
+  position: absolute; inset: 0; z-index: 5;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 96px 90px 84px;
+}
+.format-long .code-demo-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 44px; font-weight: 800; color: #e6edf3;
+  margin-bottom: 26px; text-align: center; max-width: 1560px;
+}
+.format-long .code-window {
+  width: 100%; max-width: 1680px;
+  background: #1e1e1e;
+  border: 1px solid #3c3c3c; border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+  font-family: 'JetBrains Mono', monospace;
+  text-align: left;
+}
+.format-long .code-titlebar {
+  display: flex; align-items: center; gap: 8px;
+  background: #323233; padding: 12px 18px;
+}
+.format-long .code-titlebar-name {
+  margin: 0 auto; font-size: 20px; color: #cccccc;
+  transform: translateX(-30px);
+}
+.format-long .code-tabbar {
+  display: flex; background: #252526; padding-left: 8px;
+}
+.format-long .code-tab {
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px 20px; font-size: 22px; color: #969696;
+  border-right: 1px solid #1e1e1e;
+}
+.format-long .code-tab-active {
+  background: #1e1e1e; color: #ffffff;
+  box-shadow: inset 0 2px 0 #58a6ff;
+}
+.format-long .code-tab-close { color: #8b949e; font-size: 20px; }
+.format-long .code-body { padding: 18px 0 22px; overflow: hidden; }
+.format-long .code-line {
+  display: flex; align-items: baseline;
+  font-size: 27px; line-height: 1.5; min-height: 1.5em;
+  padding-right: 28px; white-space: pre;
+}
+.format-long .code-lineno {
+  flex: 0 0 76px; text-align: right; padding-right: 26px;
+  color: #858585; user-select: none;
+}
+.format-long .code-text { color: #d4d4d4; }
+.format-long .code-line-hl {
+  background: rgba(88, 166, 255, 0.14);
+  box-shadow: inset 4px 0 0 #58a6ff;
+}
+/* Density tiers — shrink type so long files fit 1080px height.
+   Budget: titlebar ~48 + tabbar ~52 + body padding ~40 leaves ~940px
+   for lines inside a window that also shares the frame with the
+   scene padding (~180px) and optional title/caption (~120px). */
+.format-long .code-window--medium .code-line { font-size: 24px; line-height: 1.42; }
+.format-long .code-window--dense .code-lineno { flex-basis: 64px; padding-right: 20px; }
+
+/* ── DENSE CODE DEMO (>20 lines) — full-file fit ──────────────
+   Regression fix (v1 render test, 2026-11-19): a 30-line demo was
+   clipped to 19 lines. Two causes: (1) the base .code-line rule's
+   min-height:1.5em silently overrode the dense line-height (each
+   line was really 1.5×20.5=30.75px, not 27.5px), and (2) the
+   window + scene title + caption simply exceeded the 1080px stage.
+   Dense scenes therefore get their own compact layout. Height
+   arithmetic for the worst case (30 lines + title + caption):
+     stage                                        1080.0
+     layout padding (116 top + 32 bottom)         −148.0
+     title block (32px × 1.15 + 10 margin)         −46.8
+     caption block (24px × 1.30 + 10 margin)       −41.2
+     window border                                  −2.0
+     titlebar (8+8 padding + 20px × 1.2 name)      −40.0
+     tabbar (8+8 padding + 22px × 1.25 tab)        −43.5
+     body padding (10 + 10)                        −20.0
+     statusbar (5+5 padding + 19px × 1.25)         −33.8
+     30 lines × max(19 × 1.22, 19 × 1.22 min-h)   −695.4
+     TOTAL                                        1070.7  ≤ 1080 ✓
+   The html-composer tests recompute this budget from the values
+   below — changing any of them re-checks the fit.
+
+   Polish fix (v2 render test, 2026-11-19): the dense scene title
+   overlapped the shell header (channel name + brand tag) because
+   the centred stack floated its title into the header band, and
+   the shell keyword chip painted over the caption's middle. The
+   dense layout is therefore pinned to the top of the stage
+   (justify-content: flex-start) with a 116px top padding: the
+   shell header occupies 36 (top) + 64 (icon height) = 100px, so
+   the title's top edge sits at exactly 116px — 16px clear of the
+   header, for any dense scene. The chip collision is handled in
+   animations.js (chip hidden while a dense scene is on screen);
+   the ~46px reclaimed by the tighter dense line (1.30 → 1.22)
+   pays for the taller top padding. */
+.format-long .layout-code-demo--dense {
+  justify-content: flex-start;
+  padding: 116px 90px 32px;
+}
+.format-long .layout-code-demo--dense .code-demo-title {
+  font-size: 32px; line-height: 1.15; margin-bottom: 10px;
+}
+.format-long .layout-code-demo--dense .code-demo-caption {
+  font-size: 24px; line-height: 1.3; margin-top: 10px;
+}
+.format-long .code-window--dense .code-titlebar { padding: 8px 18px; }
+.format-long .code-window--dense .code-tab { padding: 8px 20px; }
+.format-long .code-window--dense .code-body { padding: 10px 0; }
+.format-long .code-window--dense .code-statusbar { padding: 5px 18px; }
+.format-long .code-window--dense .code-line {
+  font-size: 19px; line-height: 1.22; min-height: 1.22em;
+}
+
+/* VS Code Dark+ token colours */
+.format-long .tok-keyword { color: #569cd6; }
+.format-long .tok-string { color: #ce9178; }
+.format-long .tok-comment { color: #6a9955; font-style: italic; }
+.format-long .tok-number { color: #b5cea8; }
+
+.format-long .code-statusbar {
+  display: flex; gap: 28px; align-items: center;
+  background: #007acc; color: #ffffff;
+  font-size: 19px; padding: 7px 18px;
+}
+
+/* Subscribe-only outro card (long): centred, just the button */
+.format-long .tt-card--subscribe-only {
+  padding: 22px 26px; justify-content: center; gap: 0;
+}
+.format-long .tt-card--subscribe-only .tt-follow-btn {
+  font-size: 34px; padding: 18px 54px;
+}
+
+.format-long .code-demo-caption {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 30px; font-weight: 500; color: #8b949e;
+  margin-top: 24px; text-align: center; max-width: 1500px; line-height: 1.35;
+}

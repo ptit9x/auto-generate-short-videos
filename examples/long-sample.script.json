@@ -1,0 +1,365 @@
+{
+  "version": "1.0",
+  "format": "long",
+  "metadata": {
+    "title": "Xóa 30 Dòng useEffect Gọi API Bằng 4 Dòng TanStack Query — Bản Dài Chi Tiết",
+    "source": {
+      "url": "https://tanstack.com/query/latest",
+      "domain": "tanstack.com",
+      "image": null
+    },
+    "channel": "Lập trình là cuộc sống"
+  },
+  "voice": {
+    "provider": "edge-tts",
+    "voiceId": "vi-VN-NamMinhNeural",
+    "speed": 1
+  },
+  "scenes": [
+    {
+      "id": "hook",
+      "type": "hook",
+      "voiceText": "Ba mươi dòng useEffect chỉ để gọi một cái ây-pi-ai. Mày có đang viết code kiểu này không? Video này tao xóa ba mươi dòng đó, thay bằng đúng bốn dòng TanStack Query — và giải thích kĩ từng dòng một.",
+      "templateData": {
+        "template": "hook",
+        "headline": "30 dòng → 4 dòng",
+        "subhead": "Xóa useEffect gọi API bằng TanStack Query"
+      }
+    },
+    {
+      "id": "ch1",
+      "type": "chapter",
+      "voiceText": "Chương một: vì sao gọi ây-pi-ai bằng useEffect lại đau? Nhìn lại cái file quen thuộc này đã.",
+      "templateData": {
+        "template": "chapter",
+        "index": 1,
+        "title": "Vì sao gọi API bằng useEffect lại đau?",
+        "subtitle": "Nhìn lại file Users.jsx viết tay — 30 dòng cho 1 lần fetch"
+      }
+    },
+    {
+      "id": "code-manual",
+      "type": "body",
+      "voiceText": "Đây là nguyên file viết tay, tao đếm thật: ba mươi dòng. Ba cái useState cho users, loading và error. Một useRef để tự chế cache sáu mươi giây. Hàm load tự check cache, tự gọi fetch, tự set error. Rồi hai cái useEffect: một cái gọi load lần đầu, một cái lắng nghe sự kiện focus để refetch khi quay lại tab. Nhìn ba khối được highlight đi: state, cache, effect — tất cả đều là việc lặp đi lặp lại ở mọi component gọi ây-pi-ai.",
+      "templateData": {
+        "template": "code-demo",
+        "filename": "Users.jsx",
+        "language": "JavaScript JSX",
+        "title": "Bản tay: 30 dòng — useState ×3 + cache tự chế + 2 useEffect",
+        "code": [
+          "import { useEffect, useRef, useState } from \"react\";",
+          "",
+          "export function Users() {",
+          "  const [users, setUsers] = useState(null);",
+          "  const [loading, setLoading] = useState(true);",
+          "  const [error, setError] = useState(null);",
+          "  const cacheRef = useRef(null);",
+          "",
+          "  async function load() {",
+          "    if (cacheRef.current && Date.now() - cacheRef.current.at < 60000) {",
+          "      setUsers(cacheRef.current.data);",
+          "      setLoading(false);",
+          "      return;",
+          "    }",
+          "    try {",
+          "      const data = await fetch(\"/api/users\").then((r) => r.json());",
+          "      cacheRef.current = { data, at: Date.now() };",
+          "      setUsers(data);",
+          "    } catch (e) {",
+          "      setError(e);",
+          "    } finally {",
+          "      setLoading(false);",
+          "    }",
+          "  }",
+          "  useEffect(() => { load(); }, []);",
+          "  useEffect(() => {",
+          "    window.addEventListener(\"focus\", load);",
+          "    return () => window.removeEventListener(\"focus\", load);",
+          "  }, []);",
+          "}"
+        ],
+        "highlightLines": [
+          4,
+          5,
+          6,
+          7,
+          10,
+          11,
+          12,
+          26,
+          27,
+          28,
+          29
+        ],
+        "caption": "Highlight: khối useState (4–7), khối cache trong load() (10–12), 2 useEffect (26–29)"
+      }
+    },
+    {
+      "id": "pain-callout",
+      "type": "body",
+      "voiceText": "Tóm lại nỗi đau: ba useState phải tự giữ cho khớp nhau, cache tự chế không ai dám chắc đúng, refetch khi quay lại tab phải tự gắn sự kiện, và quên cleanup là rò rỉ bộ nhớ. Chưa lấy được dữ liệu đã rối.",
+      "templateData": {
+        "template": "callout",
+        "statement": "3 useState · cache tự chế · refetch thủ công · quên cleanup là leak",
+        "tag": "Nỗi đau"
+      }
+    },
+    {
+      "id": "pain-list",
+      "type": "body",
+      "voiceText": "Và đây mới là phần tệ nhất: thêm một ây-pi-ai thứ hai là copy nguyên cục ba mươi dòng này sang, sửa vài chữ. Gọi thừa, lệch cache, khó bảo trì — lỗi nhân bản theo số lượng màn hình.",
+      "templateData": {
+        "template": "feature-list",
+        "title": "Thêm API thứ 2 thì sao?",
+        "bullets": [
+          "Copy nguyên 30 dòng sang component mới",
+          "Mỗi nơi một kiểu cache, lệch nhau lúc nào không hay",
+          "Gọi API thừa vì không ai biết data đã có chưa",
+          "Sửa logic fetch = sửa ở mọi nơi đã copy"
+        ]
+      }
+    },
+    {
+      "id": "ch2",
+      "type": "chapter",
+      "voiceText": "Chương hai: cài đặt và setup. Phần này chỉ làm đúng một lần duy nhất cho cả app, nhớ kĩ chi tiết đó.",
+      "templateData": {
+        "template": "chapter",
+        "index": 2,
+        "title": "Cài đặt và setup — chỉ 1 lần",
+        "subtitle": "QueryClientProvider bọc app 1 lần ở root, dùng cho mọi query về sau"
+      }
+    },
+    {
+      "id": "code-setup",
+      "type": "body",
+      "voiceText": "Cài bằng lệnh npm install @tanstack/react-query. Sau đó ở file main, tạo một QueryClient và bọc app bằng QueryClientProvider một lần ở root. Nói rõ để khỏi ai bắt bẻ: đây là setup một lần cho cả app, không phải trả phí theo từng query. Từ đây trở đi, mọi component con đều dùng được useQuery.",
+      "templateData": {
+        "template": "code-demo",
+        "filename": "main.jsx",
+        "language": "JavaScript JSX",
+        "title": "Setup 1 lần: npm i @tanstack/react-query + QueryClientProvider ở root",
+        "code": [
+          "import { QueryClient, QueryClientProvider } from \"@tanstack/react-query\";",
+          "import { createRoot } from \"react-dom/client\";",
+          "import { App } from \"./App\";",
+          "",
+          "const queryClient = new QueryClient();",
+          "",
+          "createRoot(document.getElementById(\"root\")).render(",
+          "  <QueryClientProvider client={queryClient}>",
+          "    <App />",
+          "  </QueryClientProvider>",
+          ");"
+        ],
+        "highlightLines": [
+          5,
+          8
+        ],
+        "caption": "Bọc 1 lần ở root — setup một lần, không tính theo từng query"
+      }
+    },
+    {
+      "id": "ch3",
+      "type": "chapter",
+      "voiceText": "Chương ba: useQuery cơ bản. Đây là bốn dòng thần thánh thay cho ba mươi dòng vừa rồi.",
+      "templateData": {
+        "template": "chapter",
+        "index": 3,
+        "title": "useQuery cơ bản — 4 dòng thần thánh",
+        "subtitle": "queryKey để cache, queryFn để gọi API — hết"
+      }
+    },
+    {
+      "id": "code-usequery",
+      "type": "body",
+      "voiceText": "Bốn dòng này làm hết việc của ba mươi dòng cũ. Dòng một: useQuery trả về data, isLoading và error — khỏi cần ba useState. Dòng hai: queryKey là cái tên để TanStack cache và nhận diện dữ liệu này. Dòng ba: queryFn là hàm gọi ây-pi-ai thật. Dòng bốn đóng hook. Loading, error, data — nó lo hết.",
+      "templateData": {
+        "template": "code-demo",
+        "filename": "Users.jsx",
+        "language": "JavaScript JSX",
+        "title": "Bản TanStack: đúng 4 dòng",
+        "code": [
+          "const { data: users, isLoading, error } = useQuery({",
+          "  queryKey: ['users'],",
+          "  queryFn: () => fetch('/api/users').then(r => r.json()),",
+          "});"
+        ],
+        "highlightLines": [
+          1,
+          2,
+          3
+        ],
+        "caption": "queryKey = tên cache · queryFn = hàm fetch · data/isLoading/error có sẵn"
+      }
+    },
+    {
+      "id": "code-states",
+      "type": "body",
+      "voiceText": "Phần render thì hai bên giống hệt nhau nên tao không tính vào so sánh — nhưng nhắc lại cho đủ: isLoading thì hiện đang tải, có error thì hiện lỗi, còn lại map data ra danh sách. Ba trạng thái này lấy thẳng từ useQuery, không phải tự chế biến nào nữa.",
+      "templateData": {
+        "template": "code-demo",
+        "filename": "Users.jsx",
+        "language": "JavaScript JSX",
+        "title": "Xử lý 3 trạng thái: loading / error / data",
+        "code": [
+          "if (isLoading) return <p>Đang tải...</p>;",
+          "if (error) return <p>Lỗi: {error.message}</p>;",
+          "",
+          "return (",
+          "  <ul>",
+          "    {users.map((u) => (",
+          "      <li key={u.id}>{u.name}</li>",
+          "    ))}",
+          "  </ul>",
+          ");"
+        ],
+        "highlightLines": [
+          1,
+          2
+        ],
+        "caption": "Phần render giống hệt bản tay — nên không tính vào con số 30 → 4"
+      }
+    },
+    {
+      "id": "ch4",
+      "type": "chapter",
+      "voiceText": "Chương bốn: cache và refetch — thứ mà useEffect làm không nổi, còn TanStack thì có sẵn.",
+      "templateData": {
+        "template": "chapter",
+        "index": 4,
+        "title": "Cache và refetch — thứ useEffect làm không nổi",
+        "subtitle": "Cache theo queryKey, staleTime, refetch khi focus, retry tự động"
+      }
+    },
+    {
+      "id": "list-cache",
+      "type": "body",
+      "voiceText": "Nhớ cái cache tự chế sáu mươi giây và cái sự kiện focus mình phải tự gắn không? TanStack có sẵn hết: cache theo queryKey, staleTime để khai báo bao lâu data còn tươi, tự refetch khi quay lại tab, và tự retry khi mạng chập chờn. Khỏi viết, khỏi test lại.",
+      "templateData": {
+        "template": "feature-list",
+        "title": "Có sẵn, khỏi viết",
+        "bullets": [
+          "Cache theo queryKey — component nào cũng dùng chung",
+          "staleTime: data còn fresh thì không gọi lại API",
+          "Tự refetch khi quay lại tab (window focus)",
+          "Tự retry khi request lỗi — mặc định 3 lần"
+        ]
+      }
+    },
+    {
+      "id": "code-staletime",
+      "type": "body",
+      "voiceText": "Muốn chỉnh thì thêm staleTime ngay trong query, ví dụ sáu mươi nghìn mili giây tức sáu mươi giây data còn tươi — đúng con số cái cache tự chế lúc nãy, nhưng giờ chỉ là một dòng khai báo. Hoặc đặt mặc định cho mọi query ngay ở QueryClient lúc setup.",
+      "templateData": {
+        "template": "code-demo",
+        "filename": "Users.jsx",
+        "language": "JavaScript JSX",
+        "title": "staleTime: khai báo 1 dòng thay cho cache tự chế",
+        "code": [
+          "const { data: users } = useQuery({",
+          "  queryKey: ['users'],",
+          "  queryFn: () => fetch('/api/users').then(r => r.json()),",
+          "  staleTime: 60_000, // 60 giây: data còn fresh, không gọi lại",
+          "});",
+          "",
+          "// Hoặc đặt mặc định cho mọi query ở QueryClient:",
+          "const queryClient = new QueryClient({",
+          "  defaultOptions: { queries: { staleTime: 60_000, retry: 2 } },",
+          "});"
+        ],
+        "highlightLines": [
+          4,
+          9
+        ],
+        "caption": "60_000 = 60 giây — đúng con số cache tự chế, giờ chỉ còn 1 dòng"
+      }
+    },
+    {
+      "id": "ch5",
+      "type": "chapter",
+      "voiceText": "Chương năm: useMutation — khi cần ghi dữ liệu chứ không chỉ đọc.",
+      "templateData": {
+        "template": "chapter",
+        "index": 5,
+        "title": "useMutation — khi cần ghi dữ liệu",
+        "subtitle": "POST xong thì invalidateQueries để danh sách tự tải lại"
+      }
+    },
+    {
+      "id": "code-mutation",
+      "type": "body",
+      "voiceText": "Đọc thì useQuery, ghi thì useMutation. Khai báo mutationFn là hàm post dữ liệu. Quan trọng nhất là onSuccess: gọi invalidateQueries với queryKey users — TanStack hiểu là cache này đã cũ, tự fetch lại danh sách mới. Khỏi tự gọi load lại, khỏi setUsers thủ công như bản tay.",
+      "templateData": {
+        "template": "code-demo",
+        "filename": "AddUser.jsx",
+        "language": "JavaScript JSX",
+        "title": "useMutation + invalidateQueries(['users'])",
+        "code": [
+          "const queryClient = useQueryClient();",
+          "",
+          "const addUser = useMutation({",
+          "  mutationFn: (name) => fetch('/api/users', {",
+          "    method: 'POST',",
+          "    body: JSON.stringify({ name }),",
+          "  }),",
+          "  onSuccess: () => {",
+          "    // Cache 'users' đã cũ → TanStack tự fetch lại danh sách mới",
+          "    queryClient.invalidateQueries({ queryKey: ['users'] });",
+          "  },",
+          "});",
+          "",
+          "addUser.mutate('Người dùng mới');"
+        ],
+        "highlightLines": [
+          10
+        ],
+        "caption": "invalidateQueries(['users']) = tự tải lại danh sách, khỏi gọi load() thủ công"
+      }
+    },
+    {
+      "id": "list-mistakes",
+      "type": "body",
+      "voiceText": "Ba lỗi người mới hay dính nhất: một, queryKey không ổn định, mỗi lần render một key khác là cache vô dụng. Hai, bọc useQuery trong useEffect — quay lại đúng cái mình vừa bỏ. Ba, quên QueryClientProvider ở root là app sập ngay. Né ba cái này là dùng ngon.",
+      "templateData": {
+        "template": "feature-list",
+        "title": "3 lỗi thường gặp",
+        "bullets": [
+          "queryKey không ổn định → cache không bao giờ trúng",
+          "Bọc useQuery trong useEffect — quay lại vạch xuất phát",
+          "Quên QueryClientProvider ở root → app báo lỗi ngay"
+        ]
+      }
+    },
+    {
+      "id": "final-comparison",
+      "type": "body",
+      "voiceText": "Chốt lại con số thật, đếm được trên màn hình: ba mươi dòng viết tay, giờ còn bốn dòng. Cache, refetch khi quay lại tab, retry — miễn phí kèm theo. Đây là con số tao đã đếm từng dòng, không phóng đại.",
+      "templateData": {
+        "template": "comparison",
+        "left": {
+          "label": "Code tay useEffect",
+          "value": "30 dòng",
+          "color": "cyan"
+        },
+        "right": {
+          "label": "TanStack Query",
+          "value": "4 dòng",
+          "color": "purple",
+          "winner": true
+        }
+      }
+    },
+    {
+      "id": "outro",
+      "type": "outro",
+      "voiceText": "Lưu video này lại để ôn dần, và xem bản Short bốn mươi mốt giây trên kênh để nhớ nhanh con số ba mươi xuống bốn. Đăng ký kênh Lập trình là cuộc sống để xem tiếp các mẹo xóa code kiểu này. Hẹn gặp lại ở video sau.",
+      "templateData": {
+        "template": "outro",
+        "ctaTop": "Lưu video lại để ôn dần",
+        "channelName": "Lập trình là cuộc sống",
+        "source": "tanstack.com/query · Short: youtube.com/shorts/ZhIFhemMj-Y"
+      }
+    }
+  ]
+}

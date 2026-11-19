@@ -80,7 +80,8 @@ html, body {
   line-height: 1.1; letter-spacing: -0.01em;
 }
 
-/* tag rendered as a code comment: // IT NEWS */
+/* tag rendered as a code comment: // <brandTag> — text comes from the
+   script/config (short default "IT NEWS", long default "CODE TIPS") */
 .brand-tag {
   font-family: 'JetBrains Mono', monospace;
   font-size: 24px; font-weight: 500;

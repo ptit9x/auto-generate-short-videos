@@ -2,7 +2,7 @@ import { readFile, writeFile, mkdir, copyFile } from "node:fs/promises";
 import { join, dirname, basename } from "node:path";
 import { fileURLToPath } from "node:url";
 import pLimit from "p-limit";
-import { ScriptSchema, type Script } from "./render/script-schema.js";
+import { parseScript, type Script } from "./render/script-schema.js";
 import { loadConfig } from "./config.js";
 import { createTtsClient } from "./tts/tts-client.js";
 import { fetchImage } from "./assets/image-fetcher.js";
@@ -19,6 +19,8 @@ import { log } from "./utils/logger.js";
 const TOTAL_STEPS = 8;
 const DURATION_MIN_SEC = 48;
 const DURATION_MAX_SEC = 72;
+const LONG_DURATION_MIN_SEC = 180;
+const LONG_DURATION_MAX_SEC = 1200;
 const SCENE_GAP_SEC = 0.3;
 /**
  * Extra seconds added to the outro scene visual duration AFTER the voice ends.
@@ -152,7 +154,8 @@ export async function runPipeline(scriptPath: string): Promise<void> {
       : cfg.ttsProvider === "google-tts" ? cfg.googleVoice
       : cfg.vbeeVoiceCode;
   }
-  const script: Script = ScriptSchema.parse(raw);
+  const script: Script = parseScript(raw, cfg.videoFormat);
+  log.info(`  format: ${script.format} (${script.format === "long" ? "1920x1080" : "1080x1920"}), ${script.scenes.length} scenes`);
 
   // STEP 2
   log.step(2, TOTAL_STEPS, "Write script.txt for CapCut");
@@ -300,8 +303,12 @@ export async function runPipeline(scriptPath: string): Promise<void> {
 
   const totalAudioSec = await getDurationSec(voiceMp3);
   log.info(`  voice.mp3 total: ${totalAudioSec.toFixed(2)}s`);
-  if (totalAudioSec < DURATION_MIN_SEC || totalAudioSec > DURATION_MAX_SEC) {
-    log.warn(`Total duration ${totalAudioSec.toFixed(1)}s outside [${DURATION_MIN_SEC}, ${DURATION_MAX_SEC}]s tolerance — proceeding anyway`);
+  // Duration tolerance is format-aware: shorts target ~1 min, long
+  // tutorials target 3–20 min. Warning only, exactly as before.
+  const durMin = script.format === "long" ? LONG_DURATION_MIN_SEC : DURATION_MIN_SEC;
+  const durMax = script.format === "long" ? LONG_DURATION_MAX_SEC : DURATION_MAX_SEC;
+  if (totalAudioSec < durMin || totalAudioSec > durMax) {
+    log.warn(`Total duration ${totalAudioSec.toFixed(1)}s outside [${durMin}, ${durMax}]s tolerance — proceeding anyway`);
   }
 
   // Merged, timeline-accurate subtitles (matches the final video exactly)
@@ -354,6 +361,8 @@ export async function runPipeline(scriptPath: string): Promise<void> {
     tiktok: cfg.tiktok,
     tiktokAvatarRelPath: ttAvatarFile,
     outroHoldSec: OUTRO_HOLD_SEC,
+    format: script.format,
+    brandTag: cfg.brandTag,
   });
 
   // hyperframes expects: index.html (NOT composition.html), hyperframes.json, meta.json in DIR
@@ -375,7 +384,15 @@ export async function runPipeline(scriptPath: string): Promise<void> {
     cfg.videoTheme === "light-pro" ? "styles.light-pro.css" :
     cfg.videoTheme === "dev-terminal" ? "styles.dev-terminal.css" :
     "styles.css";
-  await copyFile(join(TPL_DIR, themeFile),       join(outputDir, "styles.css"));
+  if (script.format === "long") {
+    // Long: theme CSS + landscape overrides concatenated into the single
+    // styles.css the template links (long CSS must come after the theme).
+    const themeCss = await readFile(join(TPL_DIR, themeFile), "utf8");
+    const longCss = await readFile(join(TPL_DIR, "styles.long.css"), "utf8");
+    await writeFile(join(outputDir, "styles.css"), `${themeCss}\n${longCss}`);
+  } else {
+    await copyFile(join(TPL_DIR, themeFile),       join(outputDir, "styles.css"));
+  }
   await copyFile(join(TPL_DIR, "animations.js"), join(outputDir, "animations.js"));
 
   // STEP 7

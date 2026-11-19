@@ -1,0 +1,572 @@
+{
+  "version": "1.0",
+  "metadata": {
+    "title": "Apple ra mắt iPhone 17 với camera 200MP",
+    "source": {
+      "url": "https://vnexpress.net/iphone-17-200mp",
+      "domain": "vnexpress.net",
+      "image": "https://i1-vnexpress.vnecdn.net/iphone17.jpg"
+    },
+    "channel": "Công nghệ 24h"
+  },
+  "voice": {
+    "provider": "lucylab",
+    "voiceId": "${VIETNAMESE_VOICEID}",
+    "speed": 1
+  },
+  "scenes": [
+    {
+      "id": "hook",
+      "type": "hook",
+      "voiceText": "Apple vừa ra mắt iPhone 17.",
+      "templateData": {
+        "template": "hook",
+        "headline": "iPhone 17",
+        "subhead": "Camera 200MP!"
+      }
+    },
+    {
+      "id": "body-1",
+      "type": "body",
+      "voiceText": "Nội dung 1",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 1"
+      }
+    },
+    {
+      "id": "body-2",
+      "type": "body",
+      "voiceText": "Nội dung 2",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 2"
+      }
+    },
+    {
+      "id": "body-3",
+      "type": "body",
+      "voiceText": "Nội dung 3",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 3"
+      }
+    },
+    {
+      "id": "body-4",
+      "type": "body",
+      "voiceText": "Nội dung 4",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 4"
+      }
+    },
+    {
+      "id": "body-5",
+      "type": "body",
+      "voiceText": "Nội dung 5",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 5"
+      }
+    },
+    {
+      "id": "body-6",
+      "type": "body",
+      "voiceText": "Nội dung 6",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 6"
+      }
+    },
+    {
+      "id": "body-7",
+      "type": "body",
+      "voiceText": "Nội dung 7",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 7"
+      }
+    },
+    {
+      "id": "body-8",
+      "type": "body",
+      "voiceText": "Nội dung 8",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 8"
+      }
+    },
+    {
+      "id": "body-9",
+      "type": "body",
+      "voiceText": "Nội dung 9",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 9"
+      }
+    },
+    {
+      "id": "body-10",
+      "type": "body",
+      "voiceText": "Nội dung 10",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 10"
+      }
+    },
+    {
+      "id": "body-11",
+      "type": "body",
+      "voiceText": "Nội dung 11",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 11"
+      }
+    },
+    {
+      "id": "body-12",
+      "type": "body",
+      "voiceText": "Nội dung 12",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 12"
+      }
+    },
+    {
+      "id": "body-13",
+      "type": "body",
+      "voiceText": "Nội dung 13",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 13"
+      }
+    },
+    {
+      "id": "body-14",
+      "type": "body",
+      "voiceText": "Nội dung 14",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 14"
+      }
+    },
+    {
+      "id": "body-15",
+      "type": "body",
+      "voiceText": "Nội dung 15",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 15"
+      }
+    },
+    {
+      "id": "body-16",
+      "type": "body",
+      "voiceText": "Nội dung 16",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 16"
+      }
+    },
+    {
+      "id": "body-17",
+      "type": "body",
+      "voiceText": "Nội dung 17",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 17"
+      }
+    },
+    {
+      "id": "body-18",
+      "type": "body",
+      "voiceText": "Nội dung 18",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 18"
+      }
+    },
+    {
+      "id": "body-19",
+      "type": "body",
+      "voiceText": "Nội dung 19",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 19"
+      }
+    },
+    {
+      "id": "body-20",
+      "type": "body",
+      "voiceText": "Nội dung 20",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 20"
+      }
+    },
+    {
+      "id": "body-21",
+      "type": "body",
+      "voiceText": "Nội dung 21",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 21"
+      }
+    },
+    {
+      "id": "body-22",
+      "type": "body",
+      "voiceText": "Nội dung 22",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 22"
+      }
+    },
+    {
+      "id": "body-23",
+      "type": "body",
+      "voiceText": "Nội dung 23",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 23"
+      }
+    },
+    {
+      "id": "body-24",
+      "type": "body",
+      "voiceText": "Nội dung 24",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 24"
+      }
+    },
+    {
+      "id": "body-25",
+      "type": "body",
+      "voiceText": "Nội dung 25",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 25"
+      }
+    },
+    {
+      "id": "body-26",
+      "type": "body",
+      "voiceText": "Nội dung 26",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 26"
+      }
+    },
+    {
+      "id": "body-27",
+      "type": "body",
+      "voiceText": "Nội dung 27",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 27"
+      }
+    },
+    {
+      "id": "body-28",
+      "type": "body",
+      "voiceText": "Nội dung 28",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 28"
+      }
+    },
+    {
+      "id": "body-29",
+      "type": "body",
+      "voiceText": "Nội dung 29",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 29"
+      }
+    },
+    {
+      "id": "body-30",
+      "type": "body",
+      "voiceText": "Nội dung 30",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 30"
+      }
+    },
+    {
+      "id": "body-31",
+      "type": "body",
+      "voiceText": "Nội dung 31",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 31"
+      }
+    },
+    {
+      "id": "body-32",
+      "type": "body",
+      "voiceText": "Nội dung 32",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 32"
+      }
+    },
+    {
+      "id": "body-33",
+      "type": "body",
+      "voiceText": "Nội dung 33",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 33"
+      }
+    },
+    {
+      "id": "body-34",
+      "type": "body",
+      "voiceText": "Nội dung 34",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 34"
+      }
+    },
+    {
+      "id": "body-35",
+      "type": "body",
+      "voiceText": "Nội dung 35",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 35"
+      }
+    },
+    {
+      "id": "body-36",
+      "type": "body",
+      "voiceText": "Nội dung 36",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 36"
+      }
+    },
+    {
+      "id": "body-37",
+      "type": "body",
+      "voiceText": "Nội dung 37",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 37"
+      }
+    },
+    {
+      "id": "body-38",
+      "type": "body",
+      "voiceText": "Nội dung 38",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 38"
+      }
+    },
+    {
+      "id": "body-39",
+      "type": "body",
+      "voiceText": "Nội dung 39",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 39"
+      }
+    },
+    {
+      "id": "body-40",
+      "type": "body",
+      "voiceText": "Nội dung 40",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 40"
+      }
+    },
+    {
+      "id": "body-41",
+      "type": "body",
+      "voiceText": "Nội dung 41",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 41"
+      }
+    },
+    {
+      "id": "body-42",
+      "type": "body",
+      "voiceText": "Nội dung 42",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 42"
+      }
+    },
+    {
+      "id": "body-43",
+      "type": "body",
+      "voiceText": "Nội dung 43",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 43"
+      }
+    },
+    {
+      "id": "body-44",
+      "type": "body",
+      "voiceText": "Nội dung 44",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 44"
+      }
+    },
+    {
+      "id": "body-45",
+      "type": "body",
+      "voiceText": "Nội dung 45",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 45"
+      }
+    },
+    {
+      "id": "body-46",
+      "type": "body",
+      "voiceText": "Nội dung 46",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 46"
+      }
+    },
+    {
+      "id": "body-47",
+      "type": "body",
+      "voiceText": "Nội dung 47",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 47"
+      }
+    },
+    {
+      "id": "body-48",
+      "type": "body",
+      "voiceText": "Nội dung 48",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 48"
+      }
+    },
+    {
+      "id": "body-49",
+      "type": "body",
+      "voiceText": "Nội dung 49",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 49"
+      }
+    },
+    {
+      "id": "body-50",
+      "type": "body",
+      "voiceText": "Nội dung 50",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 50"
+      }
+    },
+    {
+      "id": "body-51",
+      "type": "body",
+      "voiceText": "Nội dung 51",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 51"
+      }
+    },
+    {
+      "id": "body-52",
+      "type": "body",
+      "voiceText": "Nội dung 52",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 52"
+      }
+    },
+    {
+      "id": "body-53",
+      "type": "body",
+      "voiceText": "Nội dung 53",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 53"
+      }
+    },
+    {
+      "id": "body-54",
+      "type": "body",
+      "voiceText": "Nội dung 54",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 54"
+      }
+    },
+    {
+      "id": "body-55",
+      "type": "body",
+      "voiceText": "Nội dung 55",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 55"
+      }
+    },
+    {
+      "id": "body-56",
+      "type": "body",
+      "voiceText": "Nội dung 56",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 56"
+      }
+    },
+    {
+      "id": "body-57",
+      "type": "body",
+      "voiceText": "Nội dung 57",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 57"
+      }
+    },
+    {
+      "id": "body-58",
+      "type": "body",
+      "voiceText": "Nội dung 58",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 58"
+      }
+    },
+    {
+      "id": "body-59",
+      "type": "body",
+      "voiceText": "Nội dung 59",
+      "templateData": {
+        "template": "callout",
+        "statement": "Câu 59"
+      }
+    },
+    {
+      "id": "outro",
+      "type": "outro",
+      "voiceText": "Theo dõi Công nghệ 24h.",
+      "templateData": {
+        "template": "outro",
+        "ctaTop": "Theo dõi ngay",
+        "channelName": "Công nghệ 24h",
+        "source": "vnexpress.net"
+      }
+    }
+  ],
+  "format": "long"
+}

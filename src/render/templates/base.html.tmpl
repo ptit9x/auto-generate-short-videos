@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=1080, height=1920">
+  <meta name="viewport" content="width={{WIDTH}}, height={{HEIGHT}}">
   <title>{{TITLE}}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -10,11 +10,13 @@
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
   <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="format-{{FORMAT}}">
   <div id="stage"
+       class="format-{{FORMAT}}"
        data-composition-id="news-video"
-       data-width="1080"
-       data-height="1920"
+       data-format="{{FORMAT}}"
+       data-width="{{WIDTH}}"
+       data-height="{{HEIGHT}}"
        data-start="0"
        data-duration="{{TOTAL_DURATION}}">
 

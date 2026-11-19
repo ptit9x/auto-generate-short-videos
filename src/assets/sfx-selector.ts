@@ -58,6 +58,8 @@ export const TEMPLATE_TO_CATEGORY: Record<string, string[]> = {
   callout:        ["alert", "drumroll"],                // important — warning
   "media-strip":  ["transition", "reveal"],             // gallery reveal
   outro:          ["outro", "success"],                 // ending signature
+  chapter:        ["transition", "cinematic"],          // long: section divider sweep
+  "code-demo":    ["transition", "emphasis"],           // long: code window reveal
 };
 
 /**

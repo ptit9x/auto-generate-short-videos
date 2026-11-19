@@ -3,6 +3,8 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { Script, TemplateDataType } from "./script-schema.js";
 import type { TiktokConfig } from "../config.js";
+import { dimensionsForFormat, DEFAULT_BRAND_TAG_BY_FORMAT, type VideoFormat } from "./format.js";
+import { highlightCodeLine } from "./code-highlight.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const TPL_DIR = join(__dirname, "templates");
@@ -43,6 +45,17 @@ export interface ComposeArgs {
    * Wins over bgImageRelPath for that scene's background.
    */
   sceneBg?: Record<string, string>;
+  /**
+   * Video format. Defaults to the script's own `format` field, then "short".
+   * Drives stage dimensions (short 1080×1920, long 1920×1080) and the
+   * `format-*` CSS class.
+   */
+  format?: VideoFormat;
+  /**
+   * Shell brand tag override. Precedence: this arg → script metadata
+   * `brandTag` → per-format default (short "IT NEWS", long "CODE TIPS").
+   */
+  brandTag?: string;
 }
 
 export function composeHtml(args: ComposeArgs): string {
@@ -51,6 +64,9 @@ export function composeHtml(args: ComposeArgs): string {
   const tiktokAvatar = args.tiktokAvatarRelPath ?? "tiktok-avatar.jpg";
   const outroHoldSec = args.outroHoldSec ?? 3;
   const sceneBg = args.sceneBg ?? {};
+  const format: VideoFormat = args.format ?? script.format ?? "short";
+  const dims = dimensionsForFormat(format);
+  const brandTag = args.brandTag ?? script.metadata.brandTag ?? DEFAULT_BRAND_TAG_BY_FORMAT[format];
 
   // Compute timing per scene. Outro scene gets extra HOLD seconds so the
   // TikTok follow card stays visible after the voice ends.
@@ -68,26 +84,35 @@ export function composeHtml(args: ComposeArgs): string {
 
   // Render scenes
   const sceneHtml = timing.map(({ scene, start, duration }) => {
-    return renderScene(scene, start, duration, bgImageRelPath, sceneBg, tiktok, tiktokAvatar);
+    return renderScene(scene, start, duration, bgImageRelPath, sceneBg, tiktok, tiktokAvatar, format);
   }).join("\n");
 
   // Persistent shell — uses tiktok handle in footer
-  const shellHtml = renderShell(script.metadata);
+  const shellHtml = renderShell(script.metadata, brandTag);
 
   const animJs = readFileSync(join(TPL_DIR, "animations.js"), "utf8");
+  // Vendored locally: the render sandbox cannot reach CDNs (GSAP/Google Fonts
+  // time out -> scenes stay at opacity 0). Inline both instead of linking.
+  const gsapJs = readFileSync(join(TPL_DIR, "gsap.min.js"), "utf8");
+  const fontsCss = readFileSync(join(TPL_DIR, "fonts.css"), "utf8");
 
   const tpl = readFileSync(join(TPL_DIR, "base.html.tmpl"), "utf8");
   return tpl
+    .replace(/\{\{WIDTH\}\}/g, String(dims.width))
+    .replace(/\{\{HEIGHT\}\}/g, String(dims.height))
+    .replace(/\{\{FORMAT\}\}/g, format)
     .replace("{{TITLE}}", escapeHtml(script.metadata.title))
     .replace(/\{\{TOTAL_DURATION\}\}/g, totalDuration.toFixed(2))
     .replace("{{SHELL}}", shellHtml)
     .replace("{{SCENES}}", sceneHtml)
     .replace(/src="voice\.mp3"/g, `src="${audioRelPath}"`)
-    .replace('<script src="animations.js"></script>', `<script>\n${animJs}\n</script>`);
+    .replace('<script src="animations.js"></script>', `<script>\n${animJs}\n</script>`)
+    .replace('<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>', `<script>\n${gsapJs}\n</script>`)
+    .replace('<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Anton&family=Bebas+Neue&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">', `<style>\n${fontsCss}\n</style>`);
 }
 
 // ── PERSISTENT SHELL ───────────────────────────────────────────────────────
-function renderShell(metadata: Script["metadata"]): string {
+function renderShell(metadata: Script["metadata"], brandTag: string): string {
   const channel = escapeHtml(metadata.channel);
   const domain = escapeHtml(metadata.source.domain);
   return `
@@ -98,7 +123,7 @@ function renderShell(metadata: Script["metadata"]): string {
   <div class="brand-icon">&gt;_</div>
   <div class="brand-text">
     <div class="brand-name">${channel}</div>
-    <div class="brand-tag">IT NEWS</div>
+    <div class="brand-tag">${escapeHtml(brandTag)}</div>
   </div>
 </div>
 
@@ -119,6 +144,7 @@ function renderScene(
   sceneBg: Record<string, string>,
   tiktok: TiktokConfig,
   tiktokAvatarRelPath: string,
+  format: VideoFormat,
 ): string {
   const td = scene.templateData;
 
@@ -151,8 +177,16 @@ function renderScene(
       layoutName = "media-strip";
       break;
     case "outro":
-      inner = renderOutroInner(td, tiktok, tiktokAvatarRelPath);
+      inner = renderOutroInner(td, tiktok, tiktokAvatarRelPath, format);
       layoutName = "outro";
+      break;
+    case "chapter":
+      inner = renderChapterInner(td);
+      layoutName = "chapter";
+      break;
+    case "code-demo":
+      inner = renderCodeDemoInner(td);
+      layoutName = "code-demo";
       break;
     default: {
       const _never: never = td;
@@ -331,8 +365,13 @@ function renderOutroInner(
   td: Extract<TemplateDataType, { template: "outro" }>,
   tiktok: TiktokConfig,
   avatarRelPath: string,
+  format: VideoFormat,
 ): string {
-  const ttCard = renderTiktokCard(tiktok, avatarRelPath);
+  // Long outro (Henry's outro-v2 rule): hero line once, then a card that
+  // holds ONLY the Subscribe button — no avatar, no display name repeat.
+  const ttCard = format === "long"
+    ? renderSubscribeOnlyCard()
+    : renderTiktokCard(tiktok, avatarRelPath);
   return `
 <div class="layout-outro">
   <div class="out-cta-top">${escapeHtml(td.ctaTop)}</div>
@@ -341,6 +380,24 @@ function renderOutroInner(
   <div class="out-source">Nguồn: ${escapeHtml(td.source)}</div>
 </div>
 ${ttCard}`.trim();
+}
+
+/**
+ * Subscribe-only card for the long outro: just the Subscribe button
+ * (same ids as the TikTok card so animations.js drives it unchanged),
+ * centred, with no avatar and no channel/display name.
+ */
+function renderSubscribeOnlyCard(): string {
+  return `
+<div id="tt-card" class="tt-card tt-card--subscribe-only">
+  <div id="tt-follow-btn" class="tt-follow-btn">
+    <span id="tt-btn-follow" class="tt-btn-text">Subscribe</span>
+    <span id="tt-btn-following" class="tt-btn-text tt-btn-text-following">
+      <span>Subscribed</span>
+      <span class="tt-check-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+    </span>
+  </div>
+</div>`.trim();
 }
 
 /**
@@ -362,6 +419,71 @@ function renderTiktokCard(tiktok: TiktokConfig, avatarRelPath: string): string {
       <span class="tt-check-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
     </span>
   </div>
+</div>`.trim();
+}
+
+// ── CHAPTER SCENE (long only) ──────────────────────────────────────────────
+function renderChapterInner(td: Extract<TemplateDataType, { template: "chapter" }>): string {
+  const indexDisplay = td.index === undefined
+    ? ""
+    : typeof td.index === "number" ? String(td.index).padStart(2, "0") : td.index;
+  return `
+<div class="layout-chapter">
+  ${indexDisplay ? `<div class="chapter-kicker">CHƯƠNG ${escapeHtml(indexDisplay)}</div>
+  <div class="chapter-number">${escapeHtml(indexDisplay)}</div>` : ""}
+  <div class="chapter-title">${escapeHtml(td.title)}</div>
+  <div class="chapter-rule"></div>
+  ${td.subtitle ? `<div class="chapter-subtitle">${escapeHtml(td.subtitle)}</div>` : ""}
+</div>`.trim();
+}
+
+// ── CODE DEMO SCENE (long only) ────────────────────────────────────────────
+/**
+ * Code rendered as a real VS Code window: title bar with traffic-light
+ * dots, a tab showing the filename, a line-number gutter, JetBrains Mono
+ * on the Dark+ palette (#1e1e1e), highlighted lines with a subtle
+ * background + left accent. Density class scales the font down so a full
+ * 30-line file fits a 1080px-high landscape frame without overflow:
+ * default ≤12 lines, --medium ≤20, --dense >20.
+ */
+function renderCodeDemoInner(td: Extract<TemplateDataType, { template: "code-demo" }>): string {
+  const highlighted = new Set(td.highlightLines ?? []);
+  const density = td.code.length > 20 ? " code-window--dense" : td.code.length > 12 ? " code-window--medium" : "";
+  const layoutDensity = td.code.length > 20 ? " layout-code-demo--dense" : "";
+  const lines = td.code.map((line, i) => {
+    const n = i + 1;
+    const hl = highlighted.has(n) ? " code-line-hl" : "";
+    const html = highlightCodeLine(line);
+    return `<div class="code-line${hl}"><span class="code-lineno">${n}</span><span class="code-text">${html === "" ? "&nbsp;" : html}</span></div>`;
+  }).join("\n      ");
+
+  return `
+<div class="layout-code-demo${layoutDensity}">
+  ${td.title ? `<div class="code-demo-title">${escapeHtml(td.title)}</div>` : ""}
+  <div class="code-window${density}" data-lines="${td.code.length}">
+    <div class="code-titlebar">
+      <span class="demo-dot red"></span><span class="demo-dot yellow"></span><span class="demo-dot green"></span>
+      <span class="code-titlebar-name">${escapeHtml(td.filename)} — Visual Studio Code</span>
+    </div>
+    <div class="code-tabbar">
+      <div class="code-tab code-tab-active">
+        <span class="code-tab-name">${escapeHtml(td.filename)}</span>
+        <span class="code-tab-close">×</span>
+      </div>
+    </div>
+    <div class="code-body">
+      <div class="code-lines">
+      ${lines}
+      </div>
+    </div>
+    <div class="code-statusbar">
+      <span class="code-status-item">main*</span>
+      <span class="code-status-item">${escapeHtml(td.language ?? "JavaScript JSX")}</span>
+      <span class="code-status-item">UTF-8</span>
+      <span class="code-status-item">Spaces: 2</span>
+    </div>
+  </div>
+  ${td.caption ? `<div class="code-demo-caption">${escapeHtml(td.caption)}</div>` : ""}
 </div>`.trim();
 }
 
