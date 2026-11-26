@@ -176,8 +176,15 @@ const CodeDemoData = z.object({
   filename: z.string().min(1).max(120),
   language: z.string().max(20).optional(),
   code: z.array(z.string().max(120)).min(1).max(40),
-  /** 1-based line numbers to highlight. */
-  highlightLines: z.array(z.number().int().min(1).max(40)).max(40).optional(),
+  /**
+   * Displayed line number of the first code line minus 1 (default 0).
+   * Lets one long file be shown across consecutive code-demo scenes
+   * (e.g. lines 1–25, then 26–50 with lineOffset 25) while the gutter
+   * and highlightLines keep the file's real 1-based numbers.
+   */
+  lineOffset: z.number().int().min(0).max(500).optional(),
+  /** 1-based line numbers to highlight (absolute, incl. lineOffset). */
+  highlightLines: z.array(z.number().int().min(1).max(540)).max(40).optional(),
   caption: z.string().max(120).optional(),
 });
 

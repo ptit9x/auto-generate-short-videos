@@ -450,8 +450,9 @@ function renderCodeDemoInner(td: Extract<TemplateDataType, { template: "code-dem
   const highlighted = new Set(td.highlightLines ?? []);
   const density = td.code.length > 20 ? " code-window--dense" : td.code.length > 12 ? " code-window--medium" : "";
   const layoutDensity = td.code.length > 20 ? " layout-code-demo--dense" : "";
+  const lineOffset = td.lineOffset ?? 0;
   const lines = td.code.map((line, i) => {
-    const n = i + 1;
+    const n = lineOffset + i + 1;
     const hl = highlighted.has(n) ? " code-line-hl" : "";
     const html = highlightCodeLine(line);
     return `<div class="code-line${hl}"><span class="code-lineno">${n}</span><span class="code-text">${html === "" ? "&nbsp;" : html}</span></div>`;

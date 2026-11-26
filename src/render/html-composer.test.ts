@@ -219,6 +219,26 @@ describe("composeHtml — long format (16:9)", () => {
     expect(manual).toContain("cacheRef");
   });
 
+  it("code-demo lineOffset shifts gutter numbers and highlights to absolute lines", () => {
+    const script = JSON.parse(JSON.stringify(longScript));
+    const scene = script.scenes.find((s: { id: string }) => s.id === "code-manual");
+    scene.templateData.code = scene.templateData.code.slice(25);
+    scene.templateData.lineOffset = 25;
+    scene.templateData.highlightLines = [26, 27];
+    const html = composeHtml({
+      script,
+      sceneAudio: longAudio,
+      gapSec: 0.3,
+      bgImageRelPath: null,
+      audioRelPath: "voice.mp3",
+    } as Parameters<typeof composeHtml>[0]);
+    const part = html.split('id="scene-code-manual"')[1].split('id="scene-')[0];
+    expect(part).toContain('class="code-lineno">26<');
+    expect(part).toContain('class="code-lineno">30<');
+    expect(part).not.toContain('class="code-lineno">1<');
+    expect(part).toContain("code-line-hl");
+  });
+
   it("dense code-demo markup carries the dense layout class and line count", () => {
     const html = composeLong();
     const manual = html.split('id="scene-code-manual"')[1].split('id="scene-')[0];

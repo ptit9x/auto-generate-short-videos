@@ -192,7 +192,7 @@ export function loadConfig(): Config {
     }
   }
 
-  const videoTheme = (process.env.VIDEO_THEME ?? "dark-neon") as VideoTheme;
+  const videoTheme = (process.env.VIDEO_THEME ?? "dev-terminal") as VideoTheme;
   if (videoTheme !== "dark-neon" && videoTheme !== "light-pro" && videoTheme !== "dev-terminal") {
     throw new Error(`VIDEO_THEME must be "dark-neon", "light-pro" or "dev-terminal", got "${videoTheme}"`);
   }
